@@ -1,93 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { NativeModules } from "react-native";
 import {
   SafeAreaView,
   Text,
-  useColorScheme,
-  StyleSheet,
-  TouchableOpacity,
-  PermissionsAndroid,
 } from 'react-native';
 
-// Define colors for dark and light modes
-const Colors = {
-  dark: '#121212',
-  light: '#ffffff',
-  textDark: '#ffffff',
-  textLight: '#000000',
-  buttonDark: '#333333',
-  buttonLight: '#dddddd',
-};
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import OnboardingScreen from './screens/OnboardingScreen';
+import LoginScreen from './screens/LoginScreen';
+import { AuthProvider } from './contexts/AuthContext';
+import RootNavigator from './navigators/rootNavigator';
 
-const { SmsModule } = NativeModules;
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.dark : Colors.light,
-  };
-
-  const textStyle = {
-    color: isDarkMode ? Colors.textDark : Colors.textLight,
-  };
-
-  const buttonStyle = {
-    backgroundColor: isDarkMode ? Colors.buttonDark : Colors.buttonLight,
-  };
-
-  // Request SEND_SMS permission
-  const requestSMSPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.SEND_SMS,
-        {
-          title: 'SMS Permission',
-          message: 'This app needs access to send SMS messages.',
-          buttonPositive: 'OK',
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      console.warn(err);
-      return false;
-    }
-  };
-
-  const sendSMS = async() => {
-    await SmsModule.sendSms("+912343454565", "This is a test message...");
-  };
-
+  // I think wrap in auth provider and then use isAuth to 
+  // either show Onboarding or the dashboard (mainTabs)
   return (
-    <SafeAreaView style={[styles.container, backgroundStyle]}>
-      <Text style={[styles.text, textStyle]}>Meow</Text>
-
-      <TouchableOpacity style={[styles.button, buttonStyle]} onPress={requestSMSPermission}>
-        <Text style={[styles.text, textStyle]}>Request SMS Permission</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.button, buttonStyle]} onPress={sendSMS}>
-        <Text style={[styles.text, textStyle]}>Send SMS</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  button: {
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-});
 
 export default App;
