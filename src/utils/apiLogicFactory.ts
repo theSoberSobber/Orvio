@@ -10,6 +10,7 @@ import axios from "axios";
 
 // android emulator's bridge to host machine's localhost
 const BASE_URL = "http://10.0.2.2:3000/";
+// const BASE_URL = "https://whcd6f6715ef77245a55.free.beeceptor.com";
 // const BASE_URL = "https://orvio.pavit.xyz";
 
 interface AuthLogicOptions {
@@ -41,7 +42,7 @@ export const createAuthAxios = ({
     async (error) => {
       if (error.response?.status === 401) {
         try {
-          const response = await axios.post(`/refresh`, { refreshToken });
+          const response = await axios.post(`${BASE_URL}/refresh`, { refreshToken });
           const newAccessToken = response.data.accessToken;
 
           if (setAccessToken) setAccessToken(newAccessToken);

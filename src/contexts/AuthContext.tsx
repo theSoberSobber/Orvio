@@ -67,8 +67,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoadingSendOtp(true);
     setError(null);
     try {
-      const response = await api.post("/auth/sendOtp", { phone });
-      return response.data.tid; // Return the transaction ID
+      console.log("Sending API Req...");
+      console.log(api);
+      const response = await api.post("/auth/sendOtp", { phoneNumber: phone });
+      console.log(response);
+      return response.data.transactionId; // Return the transaction ID
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to send OTP");
       return null;
@@ -82,8 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoadingVerifyOtp(true);
     setError(null);
     try {
-      const response = await api.post("/auth/verifyOtp", { tid, otp });
-      if (response.data.success) {
+      const response = await api.post("/auth/verifyOtp", { transactionId: tid, userInputOtp: otp });
+      console.log(response);
+      if (response.data) {
         await signIn(response.data.accessToken, response.data.refreshToken);
         return true;
       }

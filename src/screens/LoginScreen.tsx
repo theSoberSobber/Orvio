@@ -15,6 +15,11 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from "../navigators/rootNavigator";
 
+// TODO: make a back button at each screen
+// style the default one in a good way without header title
+// it helps to use the default cus then it is not shown on the first
+// screen in the stack which helps when we do replace's
+
 const LoginScreen = () => {
   const isDarkMode = useColorScheme() === "dark";
   const { sendOtp } = useAuth();
@@ -31,13 +36,12 @@ const LoginScreen = () => {
     }
 
     setLoading(true);
-    // const tid = await sendOtp(`+91${phone}`);
-    const tid = (await sendOtp(`+91${phone}`)) || "meow";
+    const tid = await sendOtp(`+91${phone}`);
+    // const tid = (await sendOtp(`+91${phone}`)) || "meow";
     setLoading(false);
     if (tid) {
       navigation.push("OTPScreen", {tid, phone: `+91${phone}`});
     } else {
-      // why going back to onboarding screen when this fails?
       Alert.alert("Error", "Failed to send OTP. Please try again.");
     }
   };
