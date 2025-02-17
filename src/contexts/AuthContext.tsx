@@ -14,6 +14,8 @@ interface AuthContextType {
   refreshToken: string | null;
   isLoggedIn: boolean;
   isLoading: boolean;
+  isLoadingSendOtp: boolean,
+  isLoadingVerifyOtp: boolean,
   error: string | null;
   api: ReturnType<typeof createAuthAxios>;
   sendOtp: (phone: string) => Promise<string | null>;
@@ -29,6 +31,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingSendOtp, setIsLoadingSendOtp] = useState(false);
+  const [isLoadingVerifyOtp, setIsLoadingVerifyOtp] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Sign-out function
@@ -60,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // API Functions
   const sendOtp = async (phone: string): Promise<string | null> => {
-    setIsLoading(true);
+    setIsLoadingSendOtp(true);
     setError(null);
     try {
       const response = await api.post("/auth/sendOtp", { phone });
@@ -69,13 +73,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(err.response?.data?.message || "Failed to send OTP");
       return null;
     } finally {
-      setIsLoading(false);
+      setIsLoadingSendOtp(false);
     }
   };
 
   // Verify OTP (returns boolean)
   const verifyOtp = async (tid: string, otp: string): Promise<boolean> => {
-    setIsLoading(true);
+    setIsLoadingVerifyOtp(true);
     setError(null);
     try {
       const response = await api.post("/auth/verifyOtp", { tid, otp });
@@ -88,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(err.response?.data?.message || "Invalid OTP");
       return false;
     } finally {
-      setIsLoading(false);
+      setIsLoadingVerifyOtp(false);
     }
   };
 
@@ -122,6 +126,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         refreshToken,
         isLoggedIn,
         isLoading,
+        isLoadingSendOtp,
+        isLoadingVerifyOtp,
         error,
         api,
         sendOtp,

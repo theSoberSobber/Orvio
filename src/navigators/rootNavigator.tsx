@@ -6,16 +6,18 @@ import LoginScreen from '../screens/LoginScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import PlaceholderScreen from '../screens/placeholder/PlaceholderScreen';
 import React from 'react';
+import OtpScreen from '../screens/OtpScreen';
 
 export type RootStackParamList = {
     PlaceholderMainDashboard: undefined;
     Onboarding: undefined;
     Login: undefined;
-    PlaceholderOtpScreen: { tid: string; phone: string }; // Define expected params
+    OTPScreen: { tid: string; phone: string }; // Define expected params
 };
 
 const RootNavigator = () => {
     const Stack = createNativeStackNavigator();
+    // this isLoading for auth init tasks
     const { isLoading, isLoggedIn } = useAuth();
 
     if (isLoading) {
@@ -24,7 +26,7 @@ const RootNavigator = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator screenOptions={{ headerShown: false}}>
                 {isLoggedIn ? (
                     <Stack.Screen 
                         name="PlaceholderMainDashboard" 
@@ -33,12 +35,11 @@ const RootNavigator = () => {
                     />
                 ) : (
                     <>
-                        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                        {/* <Stack.Screen name="Onboarding" component={OnboardingScreen} /> */}
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen 
-                            name="PlaceholderOtpScreen" 
-                            component={PlaceholderScreen} 
-                            initialParams={{ placeHolderFor: 'OTP Screen' }}
+                            name="OTPScreen" 
+                            component={OtpScreen}
                         />
                     </>
                     

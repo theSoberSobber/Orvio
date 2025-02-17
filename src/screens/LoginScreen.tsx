@@ -24,6 +24,7 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSendOtp = async () => {
+    // are isLoading of sendotp and verify otp unncessary should they be removed? since anyways isLoading of that subset is not useful to some component doing more work than that with these functions
     if (!phone || phone.length !== 10) {
       Alert.alert("Invalid phone number", "Please enter a valid 10-digit number.");
       return;
@@ -34,7 +35,7 @@ const LoginScreen = () => {
     const tid = (await sendOtp(`+91${phone}`)) || "meow";
     setLoading(false);
     if (tid) {
-      navigation.push("PlaceholderOtpScreen", {tid, phone: `+91${phone}`});
+      navigation.push("OTPScreen", {tid, phone: `+91${phone}`});
     } else {
       // why going back to onboarding screen when this fails?
       Alert.alert("Error", "Failed to send OTP. Please try again.");
@@ -50,10 +51,10 @@ const LoginScreen = () => {
       </Text>
 
       {/* Phone Input */}
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, isDarkMode && styles.darkInputContainer]}>
         <View style={styles.countryCodeContainer}>
           <Image source={require("../../assets/india-flag.png")} style={styles.flag} />
-          <Text style={styles.countryCode}>+91</Text>
+          <Text style={[styles.countryCode, isDarkMode && styles.darkCountryCode]}>+91</Text>
         </View>
         <TextInput
           value={phone}
@@ -90,11 +91,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
+  darkInputContainer: { backgroundColor: "#222" }, // Dark mode background fix
   countryCodeContainer: { flexDirection: "row", alignItems: "center", marginRight: 10 },
   flag: { width: 30, height: 20, marginRight: 5 },
   countryCode: { fontSize: 18, fontWeight: "bold", color: "#000" },
+  darkCountryCode: { color: "#fff" }, // Ensure country code is visible in dark mode
   input: { flex: 1, fontSize: 18, color: "#000", padding: 10 },
-  darkInput: { color: "#fff" },
+  darkInput: { color: "#fff", backgroundColor: "#222" }, // Fix input background color
   button: {
     backgroundColor: "#007bff",
     paddingVertical: 14,
