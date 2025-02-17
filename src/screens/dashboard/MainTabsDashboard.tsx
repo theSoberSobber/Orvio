@@ -18,6 +18,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useDeviceHash } from '../../hooks/getDeviceHash';
 import Toast from 'react-native-toast-message';
 import messaging from '@react-native-firebase/messaging';
+import { handleFcmMessage } from '../../utils/fcmMessages/fcmMessageHandler';
 
 const Icon = MaterialIcons;
 
@@ -152,6 +153,7 @@ const MainTabsDashboard = () => {
   
       const unsubscribe = messaging().onMessage(async remoteMessage => {
         console.log('Received FCM Foreground message:', remoteMessage);
+        await handleFcmMessage(remoteMessage, api);
       });
   
       registerDevice();

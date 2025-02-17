@@ -9,8 +9,8 @@
 import axios from "axios";
 
 // android emulator's bridge to host machine's localhost
-// const BASE_URL = "http://10.0.2.2:3000/";
-const BASE_URL = "https://whcd6f6715ef77245a55.free.beeceptor.com";
+const BASE_URL = "http://10.0.2.2:3000/";
+// const BASE_URL = "https://whcd6f6715ef77245a55.free.beeceptor.com";
 // const BASE_URL = "https://orvio.pavit.xyz";
 
 interface AuthLogicOptions {
@@ -49,9 +49,12 @@ export const createAuthAxios = ({
 
           error.config.headers.Authorization = `Bearer ${newAccessToken}`;
           return axios(error.config);
-        } catch (refreshError) {
+        } catch (refreshError: any) {
           console.error("Token refresh failed");
-          if (signOut) signOut();
+          // prevent from logging out just cus opened when offline lol
+          if(refreshError?.response?.status === 403){
+            if (signOut) signOut();
+          }
           return Promise.reject(refreshError);
         }
       }

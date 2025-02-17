@@ -5,7 +5,7 @@ import { createHash } from "crypto";
 
 const DEVICE_HASH_KEY = "deviceHash";
 
-const generateDeviceHash = (): string => {
+export const generateDeviceHash = (): string => {
   const uniqueId = JSON.stringify(DeviceInfo.getUniqueId()); // Unique per device
   console.log(uniqueId);
   const brand = DeviceInfo.getBrand();
