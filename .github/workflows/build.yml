@@ -8,7 +8,7 @@ jobs:
   install-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install npm dependencies
         run: |
           npm install
@@ -16,7 +16,7 @@ jobs:
     needs: install-and-test
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install npm dependencies
         run: |
           npm install
@@ -24,7 +24,7 @@ jobs:
         run: |
           cd android && ./gradlew assembleRelease
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
           path: android/app/build/outputs/apk/release/
