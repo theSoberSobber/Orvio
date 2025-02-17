@@ -7,9 +7,10 @@ import LoadingScreen from '../screens/LoadingScreen';
 import PlaceholderScreen from '../screens/placeholder/PlaceholderScreen';
 import React from 'react';
 import OtpScreen from '../screens/OtpScreen';
+import MainTabsDashboard from '../screens/dashboard/MainTabsDashboard';
 
 export type RootStackParamList = {
-    PlaceholderMainDashboard: undefined;
+    MainTabsDashboard: undefined;
     Onboarding: undefined;
     Login: undefined;
     OTPScreen: { tid: string; phone: string }; // Define expected params
@@ -29,9 +30,8 @@ const RootNavigator = () => {
             <Stack.Navigator screenOptions={{ headerShown: false}}>
                 {isLoggedIn ? (
                     <Stack.Screen 
-                        name="PlaceholderMainDashboard" 
-                        component={PlaceholderScreen} 
-                        initialParams={{ placeHolderFor: 'Main Dashboard' }}
+                        name="MainTabsDashboard" 
+                        component={MainTabsDashboard} 
                     />
                 ) : (
                     <>

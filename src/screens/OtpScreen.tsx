@@ -50,7 +50,7 @@ const OtpScreen = () => {
     setLoading(false);
 
     if (success) {
-      navigation.replace("PlaceholderMainDashboard");
+      navigation.replace("MainTabsDashboard");
     } else {
       Alert.alert("Error", "Invalid OTP. Please try again.");
     }
