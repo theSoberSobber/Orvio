@@ -20,6 +20,8 @@ import Toast from 'react-native-toast-message';
 import messaging from '@react-native-firebase/messaging';
 import { handleFcmMessage } from '../../utils/fcmMessages/fcmMessageHandler';
 
+import ApiKeysScreen from "./ApiKeysTab";
+
 const Icon = MaterialIcons;
 
 const PERMISSION_ITEMS = [
@@ -95,18 +97,7 @@ const HomeScreen = () => {
   );
 };
 
-const ApiKeysScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  
-  return (
-    <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>API Keys</Text>
-      <View style={[styles.card, isDarkMode && styles.darkCard]}>
-        <Text style={[styles.cardText, isDarkMode && styles.darkText]}>API Keys Placeholder</Text>
-      </View>
-    </View>
-  );
-};
+
 
 const Tab = createBottomTabNavigator();
 
@@ -126,8 +117,8 @@ const MainTabsDashboard = () => {
             });
     
             const fcmToken = await messaging().getToken();
-            
-            await api.post('/auth/register', {
+
+            const res = await api.post('/auth/register', {
               deviceHash,
               fcmToken,
             });
@@ -150,13 +141,13 @@ const MainTabsDashboard = () => {
           }
         }
       };
+
+      registerDevice();
   
       const unsubscribe = messaging().onMessage(async remoteMessage => {
         console.log('Received FCM Foreground message:', remoteMessage);
         await handleFcmMessage(remoteMessage, api);
       });
-  
-      registerDevice();
   
       return () => unsubscribe();
     }, [api, deviceHash]);
