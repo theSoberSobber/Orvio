@@ -15,6 +15,7 @@ import {
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import Toast from 'react-native-toast-message';
+import ApiKeyTestPanel from './ApiKeyTestPanel';
 
 interface ApiKey {
   id: string;
@@ -252,6 +253,9 @@ const ApiKeysScreen = () => {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* Make it look better and make it work ... */}
+      <ApiKeyTestPanel />  
 
       {loading ? (
         <ActivityIndicator style={styles.loader} color={isDarkMode ? '#fff' : '#000'} />

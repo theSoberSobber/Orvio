@@ -21,6 +21,7 @@ import messaging from '@react-native-firebase/messaging';
 import { handleFcmMessage } from '../../utils/fcmMessages/fcmMessageHandler';
 
 import ApiKeysScreen from "./ApiKeysTab";
+import HomeScreen from './HomeScreenTab';
 
 const Icon = MaterialIcons;
 
@@ -32,70 +33,70 @@ const PERMISSION_ITEMS = [
   },
 ];
 
-const HomeScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [grantedPermissions, setGrantedPermissions] = useState<string[]>([]);
+// const HomeScreen = () => {
+//   const isDarkMode = useColorScheme() === 'dark';
+//   const [grantedPermissions, setGrantedPermissions] = useState<string[]>([]);
 
-  useEffect(() => {
-    const checkPermissions = async () => {
-      const results = await Promise.all(
-        PERMISSION_ITEMS.map(async (item) => {
-          const granted = await PermissionsAndroid.check(item.permission);
-          return granted ? item.id : null;
-        })
-      );
+//   useEffect(() => {
+//     const checkPermissions = async () => {
+//       const results = await Promise.all(
+//         PERMISSION_ITEMS.map(async (item) => {
+//           const granted = await PermissionsAndroid.check(item.permission);
+//           return granted ? item.id : null;
+//         })
+//       );
 
-      setGrantedPermissions(results.filter((id) => id !== null) as string[]);
-    };
+//       setGrantedPermissions(results.filter((id) => id !== null) as string[]);
+//     };
 
-    checkPermissions();
-  }, []);
+//     checkPermissions();
+//   }, []);
 
-  const requestPermission = async (id: string, permission: Permission) => {
-    try {
-      const result = await PermissionsAndroid.request(permission);
-      if (result === PermissionsAndroid.RESULTS.GRANTED) {
-        setGrantedPermissions((prev) => [...prev, id]);
-      } else {
-        Alert.alert('Permission Denied', 'You need to allow this permission for full functionality.');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'An error occurred while requesting permission.');
-    }
-  };
+//   const requestPermission = async (id: string, permission: Permission) => {
+//     try {
+//       const result = await PermissionsAndroid.request(permission);
+//       if (result === PermissionsAndroid.RESULTS.GRANTED) {
+//         setGrantedPermissions((prev) => [...prev, id]);
+//       } else {
+//         Alert.alert('Permission Denied', 'You need to allow this permission for full functionality.');
+//       }
+//     } catch (error) {
+//       Alert.alert('Error', 'An error occurred while requesting permission.');
+//     }
+//   };
 
-  const remainingPermissions = PERMISSION_ITEMS.filter(p => !grantedPermissions.includes(p.id));
+//   const remainingPermissions = PERMISSION_ITEMS.filter(p => !grantedPermissions.includes(p.id));
 
-  return (
-    <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      {remainingPermissions.length > 0 && (
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Permissions</Text>
-          <FlatList
-            data={remainingPermissions}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[styles.card, isDarkMode && styles.darkCard]}
-                onPress={() => requestPermission(item.id, item.permission)}
-              >
-                <Text style={[styles.cardText, isDarkMode && styles.darkText]}>{item.label}</Text>
-                <Icon name="chevron-right" size={24} color={isDarkMode ? '#fff' : '#000'} />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      )}
+//   return (
+//     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
+//       {remainingPermissions.length > 0 && (
+//         <View style={styles.section}>
+//           <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Permissions</Text>
+//           <FlatList
+//             data={remainingPermissions}
+//             keyExtractor={(item) => item.id}
+//             renderItem={({ item }) => (
+//               <TouchableOpacity
+//                 style={[styles.card, isDarkMode && styles.darkCard]}
+//                 onPress={() => requestPermission(item.id, item.permission)}
+//               >
+//                 <Text style={[styles.cardText, isDarkMode && styles.darkText]}>{item.label}</Text>
+//                 <Icon name="chevron-right" size={24} color={isDarkMode ? '#fff' : '#000'} />
+//               </TouchableOpacity>
+//             )}
+//           />
+//         </View>
+//       )}
 
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Stats</Text>
-        <View style={[styles.card, isDarkMode && styles.darkCard]}>
-          <Text style={[styles.cardText, isDarkMode && styles.darkText]}>Placeholder for stats section.</Text>
-        </View>
-      </View>
-    </View>
-  );
-};
+//       <View style={styles.section}>
+//         <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Stats</Text>
+//         <View style={[styles.card, isDarkMode && styles.darkCard]}>
+//           <Text style={[styles.cardText, isDarkMode && styles.darkText]}>Placeholder for stats section.</Text>
+//         </View>
+//       </View>
+//     </View>
+//   );
+// };
 
 
 
