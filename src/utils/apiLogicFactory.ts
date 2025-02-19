@@ -9,7 +9,7 @@
 import axios from "axios";
 
 // android emulator's bridge to host machine's localhost
-// const BASE_URL = "http://10.0.2.2:3000/";
+// const BASE_URL = "http://10.0.2.2:3000";
 // const BASE_URL = "https://whcd6f6715ef77245a55.free.beeceptor.com";
 const BASE_URL = "https://orvio.pavit.xyz";
 
@@ -43,7 +43,7 @@ export const createAuthAxios = ({
       if (error.response?.status === 401) {
         console.log("unauthorized recieved...");
         try {
-          const response = await axios.post(`${BASE_URL}auth/refresh`, { refreshToken });
+          const response = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken });
           console.log(response);
           const newAccessToken = response.data.accessToken;
 
