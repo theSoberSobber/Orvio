@@ -11,7 +11,7 @@ import axios from "axios";
 // android emulator's bridge to host machine's localhost
 // const BASE_URL = "http://10.0.2.2:3000";
 // const BASE_URL = "https://whcd6f6715ef77245a55.free.beeceptor.com";
-const BASE_URL = "https://orvio.pavit.xyz";
+const BASE_URL = "https://backend-orvio.pavit.xyz";
 
 interface AuthLogicOptions {
   accessToken: string;
