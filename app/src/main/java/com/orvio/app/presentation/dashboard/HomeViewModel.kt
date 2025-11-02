@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import com.orvio.app.data.local.SettingsManager
 import com.orvio.app.data.remote.api.ApiKeyService
 import com.orvio.app.data.remote.api.AuthApiService
 import com.orvio.app.domain.model.UserStats
 import com.orvio.app.domain.repository.ApiKeyRepository
 import com.orvio.app.domain.repository.AuthRepository
+import com.orvio.app.service.ForegroundServiceManager
 import com.orvio.app.utils.DeviceUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -27,7 +29,9 @@ class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val deviceUtils: DeviceUtils,
     private val apiKeyService: ApiKeyService,
-    private val authApiService: AuthApiService
+    private val authApiService: AuthApiService,
+    private val settingsManager: SettingsManager,
+    private val foregroundServiceManager: ForegroundServiceManager
 ) : ViewModel() {
     
     private val _fcmToken = MutableStateFlow<String?>(null)
@@ -42,11 +46,14 @@ class HomeViewModel @Inject constructor(
     private val _credits = MutableStateFlow(0)
     val credits: StateFlow<Int> = _credits.asStateFlow()
     
-    private val _cashbackPoints = MutableStateFlow(0)
-    val cashbackPoints: StateFlow<Int> = _cashbackPoints.asStateFlow()
+    private val _cashbackPoints = MutableStateFlow(0f)
+    val cashbackPoints: StateFlow<Float> = _cashbackPoints.asStateFlow()
     
     private val _creditMode = MutableStateFlow("")
     val creditMode: StateFlow<String> = _creditMode.asStateFlow()
+    
+    private val _isForegroundServiceEnabled = MutableStateFlow(false)
+    val isForegroundServiceEnabled: StateFlow<Boolean> = _isForegroundServiceEnabled.asStateFlow()
     
     private val _isLoadingCredits = MutableStateFlow(false)
     val isLoadingCredits: StateFlow<Boolean> = _isLoadingCredits.asStateFlow()
@@ -84,6 +91,14 @@ class HomeViewModel @Inject constructor(
                 fetchCreditsInfo()
                 startCreditsPolling()
                 startCountdownTimer()
+                
+                // Load foreground service preference
+                settingsManager.isForegroundServiceEnabled.collect { enabled ->
+                    _isForegroundServiceEnabled.value = enabled
+                    if (enabled) {
+                        foregroundServiceManager.startForegroundService()
+                    }
+                }
             } else {
                 Log.d(TAG, "User is not logged in, skipping device registration")
             }
@@ -285,6 +300,26 @@ class HomeViewModel @Inject constructor(
                 if (showLoading) {
                     _isLoadingCredits.value = false
                 }
+            }
+        }
+    }
+    
+    fun setForegroundServiceEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                settingsManager.setForegroundServiceEnabled(enabled)
+                _isForegroundServiceEnabled.value = enabled
+                
+                if (enabled) {
+                    foregroundServiceManager.startForegroundService()
+                    Log.d(TAG, "Foreground service enabled and started")
+                } else {
+                    foregroundServiceManager.stopForegroundService()
+                    Log.d(TAG, "Foreground service disabled and stopped")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to toggle foreground service", e)
+                _errorMessage.value = "Failed to toggle service: ${e.message}"
             }
         }
     }

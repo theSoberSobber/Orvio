@@ -86,6 +86,7 @@ fun HomeTab(
     val secondsUntilRefresh by viewModel.secondsUntilRefresh.collectAsState()
     val userStats by viewModel.userStats.collectAsState()
     val isLoadingStats by viewModel.isLoadingStats.collectAsState()
+    val isForegroundServiceEnabled by viewModel.isForegroundServiceEnabled.collectAsState()
     
     val coroutineScope = rememberCoroutineScope()
     val refreshing = remember { mutableStateOf(false) }
@@ -168,6 +169,14 @@ fun HomeTab(
             ) {
                 WelcomeCard()
                 
+                // Foreground service toggle card
+                ForegroundServiceCard(
+                    isEnabled = isForegroundServiceEnabled,
+                    onToggle = { enabled ->
+                        viewModel.setForegroundServiceEnabled(enabled)
+                    }
+                )
+                
                 // Credits card with cashback points
                 CreditsCard(
                     credits = credits,
@@ -248,7 +257,7 @@ fun WelcomeCard() {
 @Composable
 fun CreditsCard(
     credits: Int,
-    cashbackPoints: Int,
+    cashbackPoints: Float,
     creditMode: String,
     isLoading: Boolean,
     isUpdatingCreditMode: Boolean,
@@ -379,7 +388,7 @@ fun CreditsCard(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = "$cashbackPoints",
+                            text = "%.2f".format(cashbackPoints),
                             style = MaterialTheme.typography.displaySmall,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
