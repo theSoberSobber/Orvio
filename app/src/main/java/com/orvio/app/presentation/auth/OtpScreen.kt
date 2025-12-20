@@ -1,6 +1,7 @@
 package com.orvio.app.presentation.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,12 +40,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orvio.app.R
-import com.orvio.app.presentation.theme.Blue
+import com.orvio.app.presentation.theme.ExpressiveButton
+import com.orvio.app.presentation.theme.ExpressiveCard
+import com.orvio.app.presentation.theme.ExpressiveTextButton
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,28 +112,41 @@ fun OtpScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             
-            Text(
-                text = stringResource(R.string.otp_title),
-                style = MaterialTheme.typography.titleLarge
-            )
+            ExpressiveCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.otp_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Text(
+                        text = stringResource(R.string.otp_subtitle),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Text(
+                        text = phoneNumber,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
             
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Text(
-                text = stringResource(R.string.otp_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
-            )
-            
-            Text(
-                text = phoneNumber,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             
             // OTP input fields
             OtpInputField(
@@ -150,10 +165,10 @@ fun OtpScreen(
                 modifier = Modifier.focusRequester(focusRequester)
             )
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             // Resend button
-            TextButton(
+            ExpressiveTextButton(
                 onClick = {
                     if (resendEnabled) {
                         viewModel.sendOtp(phoneNumber) { newTransactionId ->
@@ -169,33 +184,34 @@ fun OtpScreen(
                     text = if (resendEnabled) 
                         stringResource(R.string.resend_code) 
                     else 
-                        "${stringResource(R.string.resend_code)} (${countdown}s)",
-                    color = if (resendEnabled) Blue else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        "${stringResource(R.string.resend_code)} (${countdown}s)"
                 )
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             // Verify button
-            Button(
+            ExpressiveButton(
                 onClick = {
                     viewModel.verifyOtp(transactionId, otpValue) {
                         onNavigateToDashboard()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = !isLoading && otpValue.length == 6,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Blue
-                ),
-                shape = RoundedCornerShape(28.dp)
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading && otpValue.length == 6
             ) {
-                Text(
-                    text = stringResource(R.string.verify),
-                    style = MaterialTheme.typography.labelLarge
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.verify),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
     }

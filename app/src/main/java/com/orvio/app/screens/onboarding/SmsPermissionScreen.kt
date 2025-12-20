@@ -11,15 +11,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.orvio.app.R
-import com.orvio.app.presentation.theme.Blue
+import com.orvio.app.presentation.theme.ExpressiveButton
+import com.orvio.app.presentation.theme.ExpressiveCard
 import com.orvio.app.utils.PermissionHandler
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -44,63 +48,78 @@ fun SmsPermissionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // SMS icon
-        Image(
-            painter = painterResource(id = R.drawable.ic_sms_white),
-            contentDescription = "SMS Permission",
-            modifier = Modifier.size(120.dp)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = "SMS Access Required",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Orvio needs access to send SMS messages for secure authentication and verification.",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = {
-                if (permissionState.shouldShowRationale) {
-                    showRationale = true
-                } else {
-                    permissionState.launchMultiplePermissionRequest()
-                }
-            },
+        ExpressiveCard(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Allow SMS Access")
-        }
-        
-        if (showRationale) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "SMS access is required for secure authentication. Please grant the permission to continue.",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    openAppSettings(context)
-                },
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Open Settings")
+                // SMS icon
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_sms),
+                    contentDescription = "SMS Permission",
+                    modifier = Modifier.size(120.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = "SMS Access Required",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Orvio needs access to send SMS messages for secure authentication and verification.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                ExpressiveButton(
+                    onClick = {
+                        if (permissionState.shouldShowRationale) {
+                            showRationale = true
+                        } else {
+                            permissionState.launchMultiplePermissionRequest()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Allow SMS Access")
+                }
+                
+                if (showRationale) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = "SMS access is required for secure authentication. Please grant the permission to continue.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ExpressiveButton(
+                        onClick = {
+                            openAppSettings(context)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Open Settings")
+                    }
+                }
             }
         }
     }

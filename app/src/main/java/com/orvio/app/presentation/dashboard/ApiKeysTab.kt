@@ -21,20 +21,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +51,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.orvio.app.R
 import com.orvio.app.domain.model.ApiKey
+import com.orvio.app.presentation.theme.ExpressiveButton
+import com.orvio.app.presentation.theme.ExpressiveCard
+import com.orvio.app.presentation.theme.ExpressiveFAB
+import com.orvio.app.presentation.theme.ExpressiveLoadingIndicator
+import com.orvio.app.presentation.theme.ExpressiveOutlinedButton
+import com.orvio.app.presentation.theme.ExpressiveOutlinedTextField
+import com.orvio.app.presentation.theme.ExpressiveTextButton
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.text.KeyboardOptions
@@ -103,7 +105,7 @@ fun ApiKeysTab(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showCreateDialog = true }) {
+            ExpressiveFAB(onClick = { showCreateDialog = true }) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_add),
                     contentDescription = "Add API Key"
@@ -119,8 +121,9 @@ fun ApiKeysTab(
                 .padding(paddingValues)
         ) {
             if (isLoading && apiKeys.isEmpty()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                ExpressiveLoadingIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    message = "Loading API keys..."
                 )
             } else if (apiKeys.isEmpty()) {
                 Text(
@@ -193,14 +196,13 @@ fun ApiKeyCard(
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+    ExpressiveCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -301,14 +303,13 @@ fun CreateApiKeyDialog(
             usePlatformDefaultWidth = false
         )
     ) {
-        Card(
+        ExpressiveCard(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .padding(16.dp)
                 .imePadding()
                 .windowInsetsPadding(WindowInsets.navigationBars)
-                .windowInsetsPadding(WindowInsets.ime),
-            shape = RoundedCornerShape(16.dp)
+                .windowInsetsPadding(WindowInsets.ime)
         ) {
             Column(
                 modifier = Modifier
@@ -317,16 +318,21 @@ fun CreateApiKeyDialog(
                 // Title
                 Text(
                     text = "Create API Key",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                Text("Enter a name for your new API key")
+                Text(
+                    "Enter a name for your new API key",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                OutlinedTextField(
+                ExpressiveOutlinedTextField(
                     value = apiKeyName,
                     onValueChange = { apiKeyName = it },
                     label = { Text("API Key Name") },
@@ -350,17 +356,19 @@ fun CreateApiKeyDialog(
                 // Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    ExpressiveOutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text("Cancel")
                     }
                     
-                    Spacer(modifier = Modifier.width(8.dp))
-                    
-                    Button(
+                    ExpressiveButton(
                         onClick = { onCreateClick(apiKeyName) },
-                        enabled = apiKeyName.isNotBlank()
+                        enabled = apiKeyName.isNotBlank(),
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text("Create")
                     }
@@ -388,14 +396,13 @@ fun TestApiKeyDialog(
             usePlatformDefaultWidth = false
         )
     ) {
-        Card(
+        ExpressiveCard(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .padding(16.dp)
                 .imePadding()
                 .windowInsetsPadding(WindowInsets.navigationBars)
-                .windowInsetsPadding(WindowInsets.ime),
-            shape = RoundedCornerShape(16.dp)
+                .windowInsetsPadding(WindowInsets.ime)
         ) {
             Column(
                 modifier = Modifier
@@ -405,18 +412,23 @@ fun TestApiKeyDialog(
                 // Title
                 Text(
                     text = "Test API Key",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                Text("Testing API key: ${apiKey.name}")
+                Text(
+                    "Testing API key: ${apiKey.name}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp)
+                    ExpressiveLoadingIndicator(
+                        message = "Testing API key..."
                     )
                 } else if (testResult != null) {
                     if (testResult) {
@@ -424,29 +436,39 @@ fun TestApiKeyDialog(
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_success),
                             contentDescription = "Success",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(64.dp)
                         )
                         
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         
-                        Text("API key is working correctly!")
+                        Text(
+                            "API key is working correctly!",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     } else {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_error),
                             contentDescription = "Error",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(64.dp)
                         )
                         
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         
-                        Text("API key test failed.")
+                        Text(
+                            "API key test failed.",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 } else {
                     // Initial state, show phone input and test button
                     
                     // Phone number input field
-                    OutlinedTextField(
+                    ExpressiveOutlinedTextField(
                         value = phoneNumber,
                         onValueChange = { phoneNumber = it },
                         label = { Text("Recipient Phone Number") },
@@ -466,9 +488,9 @@ fun TestApiKeyDialog(
                         placeholder = { Text("Enter recipient phone number") }
                     )
                     
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     
-                    Button(
+                    ExpressiveButton(
                         onClick = { onTestClick(apiKey.key, phoneNumber) },
                         modifier = Modifier.fillMaxWidth(),
                         enabled = phoneNumber.isNotBlank()
@@ -477,10 +499,10 @@ fun TestApiKeyDialog(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
                 // Close button
-                Button(
+                ExpressiveOutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {

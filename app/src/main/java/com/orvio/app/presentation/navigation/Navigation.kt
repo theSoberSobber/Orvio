@@ -32,16 +32,16 @@ fun Navigation(
 ) {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
-    val isLoggedIn by authViewModel.isLoggedIn.collectAsState(initial = false)
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState(initial = null)
     
     // Flag to track whether auth status has been checked
     var hasCheckedAuthStatus by rememberSaveable { mutableStateOf(false) }
     
-    // Check permissions
-    val hasPhonePermissions = remember { 
+    // Check permissions - use rememberSaveable to survive config changes
+    val hasPhonePermissions = rememberSaveable { 
         PermissionHandler.hasPermissions(context, PermissionHandler.phonePermissions)
     }
-    val hasSmsPermissions = remember {
+    val hasSmsPermissions = rememberSaveable {
         PermissionHandler.hasPermissions(context, PermissionHandler.smsPermissions)
     }
     
@@ -53,22 +53,25 @@ fun Navigation(
         composable(Route.Splash.route) {
             SplashScreen(
                 onCheckComplete = {
-                    hasCheckedAuthStatus = true
-                    if (isLoggedIn) {
-                        navController.navigate(Route.Dashboard.route) {
-                            popUpTo(Route.Splash.route) { inclusive = true }
-                        }
-                    } else if (!hasPhonePermissions) {
-                        navController.navigate(Route.PhonePermission.route) {
-                            popUpTo(Route.Splash.route) { inclusive = true }
-                        }
-                    } else if (!hasSmsPermissions) {
-                        navController.navigate(Route.SmsPermission.route) {
-                            popUpTo(Route.Splash.route) { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate(Route.Login.route) {
-                            popUpTo(Route.Splash.route) { inclusive = true }
+                    // Only check auth once we have a definite value (not null)
+                    if (isLoggedIn != null) {
+                        hasCheckedAuthStatus = true
+                        if (isLoggedIn == true) {
+                            navController.navigate(Route.Dashboard.route) {
+                                popUpTo(Route.Splash.route) { inclusive = true }
+                            }
+                        } else if (!hasPhonePermissions) {
+                            navController.navigate(Route.PhonePermission.route) {
+                                popUpTo(Route.Splash.route) { inclusive = true }
+                            }
+                        } else if (!hasSmsPermissions) {
+                            navController.navigate(Route.SmsPermission.route) {
+                                popUpTo(Route.Splash.route) { inclusive = true }
+                            }
+                        } else {
+                            navController.navigate(Route.Login.route) {
+                                popUpTo(Route.Splash.route) { inclusive = true }
+                            }
                         }
                     }
                 }
@@ -144,13 +147,19 @@ fun Navigation(
     }
     
     // If auth status changes after initial check (e.g., token expires), handle it
-    LaunchedEffect(isLoggedIn) {
-        if (hasCheckedAuthStatus) {
-            if (isLoggedIn && navController.currentDestination?.route != Route.Dashboard.route) {
+    LaunchedEffect(isLoggedIn, hasCheckedAuthStatus) {
+        // Only react to auth changes after initial check and when we have a definite value
+        if (hasCheckedAuthStatus && isLoggedIn != null) {
+            val currentRoute = navController.currentDestination?.route
+            
+            // Navigate to dashboard if logged in and not already there
+            if (isLoggedIn == true && currentRoute != Route.Dashboard.route) {
                 navController.navigate(Route.Dashboard.route) {
                     popUpTo(0) { inclusive = true }
                 }
-            } else if (!isLoggedIn && navController.currentDestination?.route == Route.Dashboard.route) {
+            } 
+            // Navigate to login flow if logged out and currently in dashboard
+            else if (isLoggedIn == false && currentRoute == Route.Dashboard.route) {
                 navController.navigate(Route.PhonePermission.route) {
                     popUpTo(0) { inclusive = true }
                 }
