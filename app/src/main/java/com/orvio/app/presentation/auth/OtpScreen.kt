@@ -73,11 +73,16 @@ fun OtpScreen(
     
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
-        while (countdown > 0) {
+    }
+    
+    // Separate LaunchedEffect for countdown timer
+    LaunchedEffect(countdown) {
+        if (countdown > 0) {
             delay(1000)
             countdown--
+        } else {
+            resendEnabled = true
         }
-        resendEnabled = true
     }
     
     LaunchedEffect(error) {
@@ -172,9 +177,9 @@ fun OtpScreen(
                 onClick = {
                     if (resendEnabled) {
                         viewModel.sendOtp(phoneNumber) { newTransactionId ->
-                            // Reset countdown
-                            countdown = 30
+                            // Reset countdown and disable resend
                             resendEnabled = false
+                            countdown = 30
                         }
                     }
                 },

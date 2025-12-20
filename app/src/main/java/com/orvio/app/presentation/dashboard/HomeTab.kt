@@ -23,15 +23,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -289,50 +284,21 @@ fun CreditsCard(
                     modifier = Modifier.weight(1f)
                 )
                 
-                // Credit mode dropdown
-                Box {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { expanded.value = !expanded.value }
-                    ) {
-                        Text(
-                            text = "Mode: ${creditMode.replaceFirstChar { it.uppercase() }}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                // Credit mode selector using FilterChips
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    creditModes.forEach { mode ->
+                        FilterChip(
+                            selected = creditMode == mode,
+                            onClick = { onCreditModeChange(mode) },
+                            label = { 
+                                Text(
+                                    text = mode.replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.labelMedium
+                                ) 
+                            }
                         )
-                        Icon(
-                            imageVector = if (expanded.value) 
-                                          Icons.Default.KeyboardArrowUp else 
-                                          Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Credit Mode",
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
-                    }
-                    
-                    DropdownMenu(
-                        expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false }
-                    ) {
-                        creditModes.forEach { mode ->
-                            DropdownMenuItem(
-                                text = { 
-                                    Text(mode.replaceFirstChar { it.uppercase() }) 
-                                },
-                                onClick = {
-                                    onCreditModeChange(mode)
-                                    expanded.value = false
-                                },
-                                leadingIcon = if (creditMode == mode) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = null
-                                        )
-                                    }
-                                } else null
-                            )
-                        }
                     }
                 }
             }
@@ -439,7 +405,7 @@ fun CreditModeExplanation(mode: String) {
     val explanation = when (mode) {
         "direct" -> "Direct Mode: Charges 1 credit per OTP. Credits are never refunded, even if delivery fails."
         "moderate" -> "Moderate Mode: Charges 1 credit per OTP. Credits refunded if delivery fails."
-        "strict" -> "Strict Mode: Charges 2 credits per OTP. Higher verification standards with partial refund if not verified."
+        "strict" -> "Strict Mode: Charges 2 credits per OTP. Credits refunded if not verified."
         else -> "Select a credit mode to see explanation"
     }
     
